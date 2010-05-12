@@ -101,42 +101,39 @@ Creating a comment pop-up:
 
 This is a bit more complex, but it shows you the flexibility. What I do here is create a comment box and after the user presses "Send", a confirmation message appears!
 
-<!-* HTML -->
 
-#HTML
-<a id="commentLink" href="javascript:">You can create a comment box pop up.</a>
 
-#JS
-document.id('commentLink').addEvent('click', function(e){
-	var obj = new Element('div', {
-		'id': 'dummy',
-		'events': {
-			'click': function(){
-				sendComment();
-				this.destroy();
+    #JS
+	document.id('commentLink').addEvent('click', function(e){
+		var obj = new Element('div', {
+			'id': 'dummy',
+			'events': {
+				'click': function(){
+					sendComment();
+					this.destroy();
+				}
 			}
-		}
+		});
+		new Message({
+			icon: "speakMedium.png",
+			iconPath: "/2010/images/",
+			width: 300,
+			fontSize: 14,
+			passEvent: e,
+			autoDismiss: false,
+			title: 'Have a Comment?' ,
+			message: '<textarea id="commentText" cols="3" rows="5" class="msgEditable"></textarea>',
+			callback: obj
+		}).say();
 	});
-	new Message({
-		icon: "speakMedium.png",
-		iconPath: "/2010/images/",
-		width: 300,
-		fontSize: 14,
-		passEvent: e,
-		autoDismiss: false,
-		title: 'Have a Comment?' ,
-		message: '<textarea id="commentText" cols="3" rows="5" class="msgEditable"></textarea>',
-		callback: obj
-	}).say();
-});
-var sendComment = function(){
-	new Message({
-		icon: "okMedium.png",
-		iconPath: "/2010/images/",
-		title: "Received!",
-		message: "We've received your comments, and we'll ...uhhh... get back to you."
-	}).say();
-}
+	var sendComment = function(){
+		new Message({
+			icon: "okMedium.png",
+			iconPath: "/2010/images/",
+			title: "Received!",
+			message: "We've received your comments, and we'll ...uhhh... get back to you."
+		}).say();
+	}
 
 
 Screenshots
