@@ -36,8 +36,8 @@ All that you have to do is call the class, and as a minimum, you set three basic
 	* tip();
 	* waiter();
 
-Options:
---------
+Options
+-------
 
 	* callingElement: (element: default to null)
 	* top: (boolean: defaults to false) Set the message to come out from the top edge of the window. Defaults to the bottom.
@@ -63,8 +63,8 @@ Options:
 	* fxOutDuration: (mixed: defaults to 'normal') Set the transition duration. Intergers are interpreted in milliseconds.
 
 
-Code Snippets:
---------------
+Code Snippets
+-------------
 
 
 Say Method:
@@ -144,8 +144,8 @@ Screenshots
 ![Screenshot 3](http://www.coldfiredesigns.com/2010/downloads/MessageClass-AskMethod.jpg)
 
 
-Mootools Plugin Dependencies:
------------------------------
+Mootools Plugin Dependencies
+----------------------------
 
 This class requires:
 
@@ -154,11 +154,18 @@ This class requires:
 	* Element.Position;
 
 
-Notes:
------------------
+Notes
+-----
 
 The styling is almost completely dependent upon the message.css included in the package. I do use CSS3, and I think it's about time! :)
 
 It's been tested in IE 7+, Safari, Firefox, and Google Chrome. IE 6 is not supported.
 
 It was developed on Mootools 1.2.4. It should work on anything 1.2. If it doesn't, contact me at http://www.coldfiredesigns.com. You'll find me there.
+
+
+Demo
+----
+
+<p>You can find demos at ColdFire Designs: <a href="http://www.coldfiredesigns.com/2010/?p=1">Message Class Demo</a></p>
+<p><a href="http://www.coldfiredesigns.com/2010/downloads/examples.html">Simple Demo</a></p>
