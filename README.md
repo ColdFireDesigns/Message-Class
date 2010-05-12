@@ -3,7 +3,7 @@ Message Class
 
 This Message Class is a simple Mootools class that will send a message to the user in style! It’s much more elegant than what you could expect from the alert javascript method. 
 
-![Screenshot](http://www.coldfiredesigns.com/downloads/MessageClassScreenShot.jpg)
+![Screenshot](http://www.coldfiredesigns.com/2010/downloads/MessageClassScreenShot.jpg)
 
 Some Key Features
 -----------------
