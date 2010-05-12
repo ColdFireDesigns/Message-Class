@@ -1,68 +1,22 @@
-/*********************************************************
- * ColdFireDesigns Message Box Mootools Class
- * 
- * Author: Jason Beaudoin, ColdFireDesigns
- * Date: 8 April 2010
- *
- * CONSTRUCTOR
- * Syntax:
- *		var msg = new Message({options});
- *
- * Options:
- *		callingElement: (element: default to null)
- *		top: (boolean: defaults to false) Set the message to come out from the top edge of the window. Defaults to the bottom.
- *		left: (boolean: defaults to false) Set the message to the left. Defaults to right.
- *		centered: (boolean: defaults to false) Set the message to the center of the window.
- *		offset: (integer: defaults to 30) Determines the padding to give from the edge of the window frame.
- *		width: (mixed: defaults to 'auto') The CSS value of your message. Pass a number to change it.
- *		iconPath: (string: defaults to 'image/icons/') The path of the icons that you'd like to use.
- *		icon: (string: defaults to null) The file name of your icon image. Note: your icon is expected to be 40 x 40! Can be changed in the CSS.
- *		title: (string: defaults to null) The title of your message.
- *		message: (string: defaults to null) Your message.
- *		delay: (integer: defaults to 0) Delays the display of your message. Integer is interpreted in milliseconds.
- *		autoDismiss: (boolean: defaults to true) The message will dismiss on it's own.Note: this is shut off automatically when user input is needed.
- *		dismissOnEvent: (boolean: defaults to false) The message will dismiss on the mouseout event. Note: this is used automatically when an event is passed.
- *		isUrgent: (boolean: defaults to false) Use the "urgent" transitioning to get the user's attention. Note: this is automatically used on the ask and tell methods.
- *		callback: (string: defaults to null) Send a function in the form of a string to be fired on confirmation of an ask method.
- *		passEvent: (event: defaults to null) Passing an event will make the message appear the your cursor location (offset by 5 px).
- *		tipMode: (boolean: defaults to false) Tip mode is a short-cut that sets the autoDismiss and dismissOnEvent to true.
- *		fxTransition: (Fx.Transition: defaults to null) Set your own transition. The default transition will simply fade in.
- *		fxDuration: (mixed: defaults to 'normal') Set the transition duration. Intergers are interpreted in milliseconds.
- *		fxUrgentTransition: (Fx.Transition object: defaults to Fx.Transitions.Bounce.easeOut) Set your own urgent transition
- *		fxOutTransition:  (Fx.Transition object: defaults to null) Set the out transition. The default will simply fade out.
- *		fxOutDuration: (mixed: defaults to 'normal') Set the transition duration. Intergers are interpreted in milliseconds.
- *		
- *
- * METHODS:
- *		Note: 
- *			. All options can be passed in the constructor!
- *			. When isUrgent is on, a "Yes", "No" or "Ok" confirmation link is added to dismiss the message.
- *		
- *		- say(title, message, icon, isUrgent, callback)
- *			Options:
- *				. title (string: required) The title of your message.
- *				. message (string: required) Your message.
- *				. icon (string: optional) The image icon that you'd like to use in the message. Note: your icon is expected to be 40 x 40! Can be changed in the CSS.
- *				. isUrgent (boolean: optional) Setting it to true will make the message use the Fx.Transition.Bounce.easeOut effect and in the centered position. 
- *				  This is to get the user's attention.
- *				. callback (string: optional) Sent a function witten in the form of a string to use as a way to fire another function upon a "Yes" click.
- *
- *		- ask(title, message, callback, icon, isUrgent)
- *			. Options are the same as the say method except that the callback is required (or rather expected) and isUrgent is true by default.
- *			. "Yes" and "No" links will be added to dismiss the message. A click on the "Yes" link will fire the callback function.
- *
- *		- tell(title, message, icon, isUrgent)
- *			. Options are the same as the say method except that isUrgent is true by default.
- *			. An "OK" link will be added to dismiss the message.
- *
- * Usage:
- * 		var msg = new ColdMsgBox;
- *		msg.showConfirm('okMedium.png', 'Success!', 'Your message is a success!) // confirmation message.
- * 		// or
- *		msg.showConfirm('cautionMedium.png', 'Deleting!', 'Are you sure you want to deleter this?', true, '456') // Deleting a record
- *		// or
- *		msg.showConfirm('errorMedium.png', 'Error.', 'An unknown error has occured.', true); // shows the error and forces the user to press 'ok' to close the dialog.
-***********************************************************/
+/*
+---
+description: Message Class. A much more sophisticated way to alert your users.
+
+license: MIT-style
+
+authors:
+- Jason Beaudoin
+- ColdFire Designs
+
+requires:
+- Element.Measure
+- Element.Position
+- Element.Shortcuts
+
+provides: [Element, Elements, $, $$]
+
+...
+*/
 
 var Message = new Class({
 	Implements: [Options, Events],
