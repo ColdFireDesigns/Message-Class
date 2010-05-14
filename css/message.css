@@ -14,10 +14,12 @@
 	background: rgb(0, 0, 0); /* compatibility fallback */
 	background: rgba(0, 0, 0, 0.8);
 	padding: 10px;
+	border-radius: 15px;
+	box-shadow: 2px 2px 6px #666;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
 	-moz-box-shadow: 2px 2px 6px #666;
-	-webkit-box-shadow: 2px 2px 5px #bbb;
+	-webkit-box-shadow: 2px 2px 5px #666;
 	z-index:-1;
 }
 
