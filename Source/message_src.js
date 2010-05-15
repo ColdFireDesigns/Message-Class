@@ -292,7 +292,7 @@ var Message = new Class({
 		var imageWidth = this.getCSSTotalWidth('msgBoxIcon'); // Getting the size of the icon image (width + padding);
 		
 		var newClear = new Element('div', {'class': 'clear'}); 
-		var p = new Element('p',{
+		var p = new Element('div',{
 			'html': this.options.message + '<br />',
 			'styles': {
 				'margin': '0px'	,
