@@ -61,7 +61,9 @@ var Message = new Class({
 		fxDuration: 'normal',		// set the transition duration
 		fxUrgentTransition: Fx.Transitions.Bounce.easeOut, // set your own urgent transition
 		fxOutTransition: null,		// set the out transition
-		fxOutDuration: 'normal'		// se the out duration
+		fxOutDuration: 'normal',		// se the out duration
+		yesLink: "Yes",
+		noLink: "No"
 	},
 	
 	initialize: function(options){
@@ -116,7 +118,6 @@ var Message = new Class({
 		this.options.autoDismiss 	= true;
 		this.options.dismissOnEvent = true;
 		this.say(title, message, icon);
-
 	},
 	
 	setVars: function(title, message, icon, isUrgent, callback){
@@ -154,6 +155,7 @@ var Message = new Class({
 		).chain(
 			function(){ 
 				if(!this.cancel) this.showMsg(); else this.complete(); // destroys the message if it's been canceled.
+				this.fireEvent('onShow'); // a nifty feature that lets you know when the message is shown.
 			}.bind(this)
 		).wait(
 			waitTime // the default delay before hidding the message
@@ -292,7 +294,7 @@ var Message = new Class({
 		var imageWidth = this.getCSSTotalWidth('msgBoxIcon'); // Getting the size of the icon image (width + padding);
 		
 		var newClear = new Element('div', {'class': 'clear'}); 
-		var p = new Element('p',{
+		var p = new Element('div',{
 			'html': this.options.message + '<br />',
 			'styles': {
 				'margin': '0px'	,
@@ -306,8 +308,8 @@ var Message = new Class({
 		// Urgent messages with an callback param require a yes and a no link to dismiss the message
 		if($chk(this.options.callback) && !isComment) {
 			
-			var yes = this.createLink('Yes', true);
-			var no 	= this.createLink('No', false);
+			var yes = this.createLink(this.options.yesLink, true);
+			var no 	= this.createLink(this.options.noLink, false);
 			
 			yes.inject(p);
 			p.appendText(' | ');
@@ -356,6 +358,7 @@ var Message = new Class({
 			'href': 'javascript:',
 			'class': 'msgBoxLink',
 			'html': html,
+			'id': html.replace(" ", "_") + 'Link',
 			'events':{
 				'click': function(){
 					this.msgChain.callChain();

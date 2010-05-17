@@ -63,6 +63,13 @@ Options:
 	* fxOutDuration: (mixed: defaults to 'normal') Set the transition duration. Intergers are interpreted in milliseconds.
 
 
+Events:
+-------
+
+	* onShow: fires when the message shows
+	* onComplete: fires when the message hides
+
+
 Code Snippets:
 --------------
 
