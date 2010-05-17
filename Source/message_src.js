@@ -153,7 +153,7 @@ var Message = new Class({
 		this.msgChain.wait(
 			this.options.delay // option to delay showing the message
 		).chain(
-			function(){ 
+			function(){
 				if(!this.cancel) this.showMsg(); else this.complete(); // destroys the message if it's been canceled.
 				this.fireEvent('onShow'); // a nifty feature that lets you know when the message is shown.
 			}.bind(this)
