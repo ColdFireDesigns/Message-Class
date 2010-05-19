@@ -382,8 +382,10 @@ var Message = new Class({
 	},
 	
 	executeCallback: function(){
-		// Determine if the callback is an object or a string to evaluate. It is expected that the object will have a click event.
-		if($type(this.options.callback) == 'element') this.options.callback.fireEvent('click'); else eval(this.options.callback);
+		// Determine if the callback is an object, function or a string to evaluate. It is expected that the object will have a click event.
+		if($type(this.options.callback) == 'element') this.options.callback.fireEvent('click');
+		else if ($type(this.options.callback)=='function') this.options.callback.run();
+		else eval(this.options.callback);
 	},
 	
 	// Tip error catching... cuz it's easy to screw this up. Nice to be told that it's messed up.	
