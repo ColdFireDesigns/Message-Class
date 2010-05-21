@@ -9,10 +9,10 @@ authors:
 - ColdFire Designs
 
 requires:
-	core/1.2.4: '*'
-	more/1.2.4:Chain.Wait
-	more/1.2.4:Element.Position
-	more/1.2.4:Element.Shortcuts
+- core/1.2.4: '*'
+- more/1.2.4:Chain.Wait
+- more/1.2.4:Element.Position
+- more/1.2.4:Element.Shortcuts
 
 provides: [Message.say, Message.tell, Message.ask, Message.waiter, Message.tip]
 
