@@ -14,7 +14,7 @@ requires:
 	more/1.2.4:Element.Position
 	more/1.2.4:Element.Shortcuts
 
-provides: [Message.say, Message.tell, Message.ask, Message.waiter, Messate.tip]
+provides: [Message.say, Message.tell, Message.ask, Message.waiter, Message.tip]
 
 ...
 */
