@@ -56,6 +56,7 @@ Options
 	* callback: (string: defaults to null) Send a function in the form of a string to be fired on confirmation of an ask method.
 	* passEvent: (event: defaults to null) Passing an event will make the message appear the your cursor location (offset by 5 px).
 	* tipMode: (boolean: defaults to false) Tip mode is a short-cut that sets the autoDismiss and dismissOnEvent to true.
+	* stack: (Boolean: defaults to true) This stacks multiple messages on top of the previous messages (or under, depending on where you’ve put your message) instead of placing them over (as in using a z-index value). Setting it to false will use a z-index.
 	* fxTransition: (Fx.Transition: defaults to null) Set your own transition. The default transition will simply fade in.
 	* fxDuration: (mixed: defaults to 'normal') Set the transition duration. Intergers are interpreted in milliseconds.
 	* fxUrgentTransition: (Fx.Transition object: defaults to Fx.Transitions.Bounce.easeOut) Set your own urgent transition
@@ -177,3 +178,4 @@ Demo
 
 <p>You can find demos at ColdFire Designs: <a href="http://www.coldfiredesigns.com/2010/?p=1">Message Class Demo</a></p>
 <p><a href="http://www.coldfiredesigns.com/2010/downloads/examples.html">Simple Demo</a></p>
+

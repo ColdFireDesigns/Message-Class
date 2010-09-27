@@ -43,7 +43,7 @@ var Message = new Class({
 		top: false,
 		left: false,
 		centered: false,
-		offset: 30, 				// determines how high the message is set when it fades in.
+		offset: 30, 				// determines the padding offset from your current window.
 		width: 'auto',
 		icon: null,					// your icon is expected to be 40 x 40
 		iconPath: 'images/icons/',
@@ -57,6 +57,7 @@ var Message = new Class({
 		isUrgent: false,
 		callback: null,				// send a function to be fired on confirmation.
 		passEvent: null,			// passing an event will make this message appear the your cursor location.
+		stack: true,				// stack multiple messages one OVER or UNDER the other; setting to false will stack them on TOP of one another
 		fxTransition: null,			// set your own transition.
 		fxDuration: 'normal',		// set the transition duration
 		fxUrgentTransition: Fx.Transitions.Bounce.easeOut, // set your own urgent transition
@@ -74,7 +75,7 @@ var Message = new Class({
 		if($chk(this.options.passEvent) && $defined(this.options.callingElement)) {
 			this.options.dismissOnEvent = true;
 			this.options.callingElement.addEvent('mouseout', function(){
-				// Only call a dismiss action when if the message is already visible. Otherwise, cancel it.
+				// Only call a dismiss action if the message is already visible. Otherwise, cancel it.
 				if(this.isDisplayed) this.dismiss(); else this.cancel = true;
 			}.bind(this));	
 		}
@@ -84,12 +85,13 @@ var Message = new Class({
 	say: function(title, message, icon, isUrgent, callback){		
 		this.setVars(title, message, icon, isUrgent, callback);// Supporting the passing of vars. 		
 		this.box = this.createBox();
-		// We must instantiate a new instance of the chain class each time the "say" method is called to overwrite the existing one otherwise a buggy error occurs.
+		/* We must instantiate a new instance of the chain class each time the "say" method is called to overwrite the existing one, 
+		   otherwise a buggy error occurs, and bugs give me the creeps, so I don't like them. */
 		this.msgChain = new Chain(); 
 		this.setMsgChain();		
 	},
 	
-	// Ask the user a question. This will bounce in to get their attention.
+	// Ask the user a pondering question. This will bounce in to get their attention.
 	ask: function(title, message, callback, icon, isUrgent){
 		this.options.autoDismiss = false;
 		if($chk(callback)) this.options.callback = callback; // ensure that autoDismiss is set to false and callback is set.
@@ -97,7 +99,7 @@ var Message = new Class({
 		this.say(title, message, icon, isUrgent, callback);
 	},
 	
-	// Tell the user something, then make them acknowledge your message by pressing the 'OK' link.
+	// Get pushy with this tell method by making your users acknowledge your message by pressing the 'OK' link.
 	tell: function(title, message, icon, isUrgent){
 		isUrgent = $defined(isUrgent) ? isUrgent : true;
 		this.options.dismissOnEvent = true;
@@ -137,7 +139,6 @@ var Message = new Class({
 				link: 'chain',
 				onComplete: function(){
 					if((this.options.autoDismiss && !this.options.dismissOnEvent) || (!this.isDisplayed && !$chk(this.options.callback)) ) this.msgChain.callChain();
-					//dbug.log((this.options.autoDismiss && !this.options.dismissOnEvent) || (!this.isDisplayed && !$chk(this.options.callback)));
 				}.bind(this),
 				transition: this.options.fxTransition,
 				duration: this.options.fxDuration
@@ -195,7 +196,7 @@ var Message = new Class({
 			
 		}
 		
-		this.isDisplayed = true; // A utility for the procedure. Storing a var that the message is currently being displayed.
+		this.isDisplayed = true; // A utility for the procedure. Stores a variable that the message is currently being displayed.
 	},
 	
 	dismiss: function(){
@@ -204,7 +205,7 @@ var Message = new Class({
 	
 	// Determines where the message will be displayed.
 	setBoxPosition: function(){
-		this.boxPos = new Hash(); // Global positioning container.
+		this.boxPos = new Hash(); // Class positioning container.
 		
 		// Support for the top and left positioning. These variables overide other positioning settings like centering on urgency, and event/cursor positioning.
 		var usePosition = (this.options.top && this.options.left);
@@ -213,33 +214,43 @@ var Message = new Class({
 		var endLeftPos;
 		var endTopPos;
 		
+		// Stack support
+		var stackPad = 1.10;
+		var messagesLength = 1;
+		if(this.options.stack){ 
+			var messages = $$('.messageClass');
+			messagesLength = messages.length;
+		}		
+		var stackUp   = ((this.boxSize.y * messagesLength) * stackPad) * -1;
+		var stackDown = this.boxSize.y * (messagesLength - 1) * stackPad
+		
 		// Set the positioning. Default position is the bottom-right corner of the window (when top and left equal false).
 		this.options.top  ? startTopPos  = (this.boxSize.y * -1) : startTopPos = this.scrollPos.y + this.windowSize.y;
 		this.options.left ? startLeftPos = this.options.offset : startLeftPos = this.windowSize.x - this.boxSize.x - this.options.offset;
-		this.options.top  ? endTopPos 	 = this.options.offset : endTopPos = this.scrollPos.y + this.windowSize.y - (this.boxSize.y * 1.25); 
+		this.options.top  ? endTopPos 	 = this.options.offset + stackDown : endTopPos = this.scrollPos.y + this.windowSize.y + stackUp ; 
 		
 		// If there was an event that was passed, show the message at the cursor coordinates...
 		if(($chk(this.options.passEvent) && !this.options.isUrgent) && !usePosition){
 			/* Ensure that the message doesn't fall outside of the viewable area. As the positioning of the message is determined by the cursor position,
-			   the message box might be too large and it will fall too far to the right. If that happens, we put the message box to the left of the
-			   cursor.*/
+			   the message box might be too large and it will fall too far to the right. This would not be good! If that happens, we put the message box 
+			   to the left of the cursor.*/
 			var offsetCursor;
 			(this.options.passEvent.page.x + this.boxSize.x > this.windowSize.x)? offsetCursor = (this.boxSize.x * -1) - 5 : offsetCursor = 5;
 			
 			this.boxPos.extend({
 				startTop  : this.options.passEvent.page.y - this.options.offset,
 				startLeft : this.options.passEvent.page.x + offsetCursor,
-				endTop	  : this.options.passEvent.page.y
+				endTop	  : this.options.passEvent.page.y + stackDown
 			});	
 			
-		// If the message is urgent or centered, displays the message in the center of the page...
+		// If the message is urgent or centered, displays the message in the center of the page, getting the users attention like a punch in the face! Like... POW!
 		} else if((this.options.isUrgent && !usePosition) || this.options.centered) {
 			this.box.position();
 			this.boxPosition = this.box.getCoordinates();
 			this.boxPos.extend({
 				startTop  : this.boxPosition.top - 100,
 				startLeft : this.boxPosition.left,
-				endTop 	  : this.boxPosition.top
+				endTop 	  : this.boxPosition.top + stackDown
 			});
 			
 		// Positions passed here...
@@ -247,7 +258,7 @@ var Message = new Class({
 			this.boxPos.extend({
 				startTop  : startTopPos,
 				startLeft : startLeftPos,
-				endTop 	  : endTopPos
+				endTop 	  : endTopPos 
 			});			
 		}
 	},
@@ -265,7 +276,7 @@ var Message = new Class({
 	
 	// Creates the message elements.
 	createBox: function(){
-		var newBox = new Element('div', {'class': 'msgBox', 'styles': {'max-width':this.options.width, 'width':this.options.width}});
+		var newBox = new Element('div', {'class': 'msgBox messageClass', 'styles': {'max-width':this.options.width, 'width':this.options.width}});
 		var imageSize = 0;
 		if($chk(this.options.icon)) {
 			var newIcon = new Element('div', {'class': 'msgBoxIcon'});
@@ -305,7 +316,7 @@ var Message = new Class({
 		// Detect if the message contains a form
 		var isComment = this.options.message.indexOf('textarea') > -1;
 		
-		// Urgent messages with an callback param require a yes and a no link to dismiss the message
+		// Urgent messages with an callback parametre requires a yes and a no link to dismiss the message
 		if($chk(this.options.callback) && !isComment) {
 			
 			var yes = this.createLink(this.options.yesLink, true);
@@ -369,7 +380,7 @@ var Message = new Class({
 		return ourLink;
 	},
 	
-	// UTILITIES BLOCK: utilities that are used internally by this class.
+	// UTILITIES BLOCK: utilities that are used by this class.
 	
 	// Gets the total size (width + padding) of a CSS class. Creates an element; injects it into the DOM; messures the element and destroys it.
 	// Inserting an element into the DOM is the only way to messure it.
@@ -419,7 +430,7 @@ var Message = new Class({
 	},
 	
 	complete: function(){
-		this.box.destroy(); // Self destruct feature when it's all done.
+		this.box.destroy(); // A James-Bond-style, self destruct feature when it's all done.
 		this.end = true; // Message status support (just in case you need it).
 		this.isDisplayed = false;
 		this.fireEvent('onComplete'); // If you've set an onComplete event during instantiation of the class, it will fire here.
