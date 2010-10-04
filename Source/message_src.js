@@ -231,7 +231,6 @@ var Message = new Class({
 			
 		if(this.options.stack){ 
 			messages = $$('[class*=messageClass]' + mcClass + '');
-			console.log(messages);
 			messagesInfo = messages.getCoordinates(); // I wish there was a better way to get the heights and top positions of all message elements.
 			
 			var heights = new Array();
@@ -249,6 +248,9 @@ var Message = new Class({
 			if(tops.length > 0){
 				if(stackDown <= tops[tops.length-1] + heights[heights.length-2] + stackPad) stackDown = tops[tops.length-1] + heights[heights.length-2] + stackPad;
 			}
+		} else {
+			stackUp = this.scrollPos.y + this.windowSize.y - this.boxSize.y - this.options.offset;
+			stackDown = this.options.offset;
 		}
 		
 		// Set the positioning. Default position is the bottom-right corner of the window (when top and left equal false).
