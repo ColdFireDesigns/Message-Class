@@ -161,6 +161,7 @@ This class requires:
 	* Chain.Wait;
 	* Element.Measure;
 	* Element.Position;
+	* Array.Extras;
 
 
 Notes
