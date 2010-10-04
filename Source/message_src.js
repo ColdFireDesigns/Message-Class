@@ -13,6 +13,7 @@ requires:
 - more/1.2.4:Chain.Wait
 - more/1.2.4:Element.Position
 - more/1.2.4:Element.Shortcuts
+- more/1.2.4:Element.Measure
 
 provides: [Message.say, Message.tell, Message.ask, Message.waiter, Message.tip]
 
@@ -207,32 +208,61 @@ var Message = new Class({
 	setBoxPosition: function(){
 		this.boxPos = new Hash(); // Class positioning container.
 		
-		// Support for the top and left positioning. These variables overide other positioning settings like centering on urgency, and event/cursor positioning.
-		var usePosition = (this.options.top && this.options.left);
-		var startTopPos;
-		var startLeftPos;
-		var endLeftPos;
-		var endTopPos;
-		
-		// Stack support
-		var stackPad = 1.10;
-		var messagesLength = 1;
+		/* Support for the top and left positioning. These variables overide other positioning settings 
+		   like centering on urgency, and event/cursor positioning. */
+		var usePosition = (this.options.top && this.options.left), 
+			startTopPos, 
+			startLeftPos, 
+			endLeftPos, 
+			endTopPos, 
+			stackUp = 0,
+			stackDown = 0,
+			stackPad = 3.5, 
+			messages,
+			messagesLength = 1,
+			heights,
+			mcClass = null,
+			tops;
+			
+		if(this.options.isUrgent){ mcClass = '[class*=mcUrgent]';}
+		else if(this.options.top){ mcClass = '[class*=mcTop]';}
+		else if($defined(this.options.callingElement)){ mcClass = '[class*=mcElement]'}
+		else { mcClass = '[class*=mcDefault]'; }
+			
 		if(this.options.stack){ 
-			var messages = $$('.messageClass');
-			messagesLength = messages.length;
-		}		
-		var stackUp   = ((this.boxSize.y * messagesLength) * stackPad) * -1;
-		var stackDown = this.boxSize.y * (messagesLength - 1) * stackPad
+			messages = $$('[class*=messageClass]' + mcClass + '');
+			console.log(messages);
+			messagesInfo = messages.getCoordinates(); // I wish there was a better way to get the heights and top positions of all message elements.
+			
+			var heights = new Array();
+			var tops 	= new Array();
+			
+			messagesInfo.each(function(m){
+				heights.push(m.height);
+				if(m.top > 0) tops.push(m.top);
+			});
+			
+			stackUp = this.scrollPos.y + this.windowSize.y - (heights.sum() + stackPad * messages.length);			
+			if(stackUp >= tops.min()) stackUp = tops.min() - this.boxSize.y - stackPad; // Radical, end-user behavior support.
+			
+			stackDown = heights.sum() - this.boxSize.y + (stackPad * messages.length);
+			if(tops.length > 0){
+				if(stackDown <= tops[tops.length-1] + heights[heights.length-2] + stackPad) stackDown = tops[tops.length-1] + heights[heights.length-2] + stackPad;
+			}
+		}
 		
 		// Set the positioning. Default position is the bottom-right corner of the window (when top and left equal false).
 		this.options.top  ? startTopPos  = (this.boxSize.y * -1) : startTopPos = this.scrollPos.y + this.windowSize.y;
 		this.options.left ? startLeftPos = this.options.offset : startLeftPos = this.windowSize.x - this.boxSize.x - this.options.offset;
-		this.options.top  ? endTopPos 	 = this.options.offset + stackDown : endTopPos = this.scrollPos.y + this.windowSize.y + stackUp ; 
+		this.options.top  ? endTopPos 	 = stackDown : endTopPos = (stackUp) ;		
+
 		
 		// If there was an event that was passed, show the message at the cursor coordinates...
 		if(($chk(this.options.passEvent) && !this.options.isUrgent) && !usePosition){
-			/* Ensure that the message doesn't fall outside of the viewable area. As the positioning of the message is determined by the cursor position,
-			   the message box might be too large and it will fall too far to the right. This would not be good! If that happens, we put the message box 
+			/* Ensure that the message doesn't fall outside of the viewable area. 
+			   As the positioning of the message is determined by the cursor position,
+			   the message box might be too large and it will fall too far to the right. 
+			   This would not be good! If that happens, we put the message box 
 			   to the left of the cursor.*/
 			var offsetCursor;
 			(this.options.passEvent.page.x + this.boxSize.x > this.windowSize.x)? offsetCursor = (this.boxSize.x * -1) - 5 : offsetCursor = 5;
@@ -240,17 +270,25 @@ var Message = new Class({
 			this.boxPos.extend({
 				startTop  : this.options.passEvent.page.y - this.options.offset,
 				startLeft : this.options.passEvent.page.x + offsetCursor,
-				endTop	  : this.options.passEvent.page.y + stackDown
+				endTop	  : this.options.passEvent.page.y + stackDown - (stackPad * 3)
 			});	
 			
-		// If the message is urgent or centered, displays the message in the center of the page, getting the users attention like a punch in the face! Like... POW!
+		/* If the message is urgent or centered, displays the message in the center of the page, 
+		   getting the users attention like a punch in the face! Like... POW! */
 		} else if((this.options.isUrgent && !usePosition) || this.options.centered) {
 			this.box.position();
 			this.boxPosition = this.box.getCoordinates();
+			
+			if(this.options.stack && messages.length > 1){
+				stackDown = tops[tops.length-1] + heights[heights.length-2] + stackPad;
+			} else {
+				stackDown = this.boxPosition.top;	
+			}
+			
 			this.boxPos.extend({
 				startTop  : this.boxPosition.top - 100,
 				startLeft : this.boxPosition.left,
-				endTop 	  : this.boxPosition.top + stackDown
+				endTop 	  : stackDown
 			});
 			
 		// Positions passed here...
@@ -276,8 +314,28 @@ var Message = new Class({
 	
 	// Creates the message elements.
 	createBox: function(){
-		var newBox = new Element('div', {'class': 'msgBox messageClass', 'styles': {'max-width':this.options.width, 'width':this.options.width}});
-		var imageSize = 0;
+		var top = "", 
+			left = "",
+			normal = "",
+			urgent = "",
+			mcElement = "",
+			newbox, 
+			imageSize, 
+			newContent, 
+			newTitle, 
+			imagesWidth, 
+			newClear, 
+			p, 
+			isComment, 
+			newMessage;
+			
+		if(this.options.top){ top = " mcTop"; }
+		else if(this.options.isUrgent){ urgent = " mcUrgent"; }
+		else if($defined(this.options.callingElement)){ mcElement = " mcElement"; }
+		else{ normal = ' mcDefault'; }
+			
+		newBox = new Element('div', {'class': 'msgBox messageClass' + top + normal + urgent + mcElement, 'styles': {'max-width':this.options.width, 'width':this.options.width}});
+		imageSize = 0;
 		if($chk(this.options.icon)) {
 			var newIcon = new Element('div', {'class': 'msgBoxIcon'});
 			var newImage = new Element('img', {
@@ -293,19 +351,19 @@ var Message = new Class({
 		// If the title or the message vars are not set, get the content from the "rel" property of the expected passed calling element.
 		if(!$chk(this.options.title) || !$chk(this.options.message)) this.getContent();
 		
-		var newContent = new Element('div', {
+		newContent = new Element('div', {
 			'class': 'msgBoxContent'
 		}).setStyle('font-size', this.options.fontSize);
 		
-		var newTitle = new Element('div', {
+		newTitle = new Element('div', {
 			'class': 'msgBoxTitle',
 			'html': this.options.title
 		}).setStyle('font-size', this.options.fontSize + 4);
 		
-		var imageWidth = this.getCSSTotalWidth('msgBoxIcon'); // Getting the size of the icon image (width + padding);
+		imageWidth = this.getCSSTotalWidth('msgBoxIcon'); // Getting the size of the icon image (width + padding);
 		
-		var newClear = new Element('div', {'class': 'clear'}); 
-		var p = new Element('div',{
+		newClear = new Element('div', {'class': 'clear'}); 
+		p = new Element('div',{
 			'html': this.options.message + '<br />',
 			'styles': {
 				'margin': '0px'	,
@@ -314,7 +372,7 @@ var Message = new Class({
 		});
 		
 		// Detect if the message contains a form
-		var isComment = this.options.message.indexOf('textarea') > -1;
+		isComment = this.options.message.indexOf('textarea') > -1;
 		
 		// Urgent messages with an callback parametre requires a yes and a no link to dismiss the message
 		if($chk(this.options.callback) && !isComment) {
@@ -343,7 +401,7 @@ var Message = new Class({
 
 		}	
 				
-		var newMessage = new Element('div', {
+		newMessage = new Element('div', {
 			'class': 'msgBoxMessage'
 		});
 		
