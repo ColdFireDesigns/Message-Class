@@ -12,8 +12,8 @@ requires:
 - core/1.2.4: '*'
 - more/1.2.4:Chain.Wait
 - more/1.2.4:Element.Position
-- more/1.2.4:Element.Shortcuts
 - more/1.2.4:Element.Measure
+- more/1.2.4:Array.Extras
 
 provides: [Message.say, Message.tell, Message.ask, Message.waiter, Message.tip]
 
@@ -34,7 +34,7 @@ var Message = new Class({
 	windowSize: null,
 	hasVerticalBar: false,
 	hasHorizontalBar: false,
-	boxPos: function(){},
+	boxPos: $empty,
 	tipCheck: true,
 	cancel: false,
 	fx: null,
@@ -73,7 +73,7 @@ var Message = new Class({
 		this.box = this;
 		if(this.options.width == 'auto') this.options.width = '250px';
 		
-		if(this.options.passEvent != null && this.options.callingElement != undefined) {
+		if($chk(this.options.passEvent) && $defined(this.options.callingElement)) {
 			this.options.dismissOnEvent = true;
 			this.options.callingElement.addEvent('mouseout', function(){
 				// Only call a dismiss action if the message is already visible. Otherwise, cancel it.
@@ -95,21 +95,21 @@ var Message = new Class({
 	// Ask the user a pondering question. This will bounce in to get their attention.
 	ask: function(title, message, callback, icon, isUrgent){
 		this.options.autoDismiss = false;
-		if(callback != null) this.options.callback = callback; // ensure that autoDismiss is set to false and callback is set.
-		isUrgent = isUrgent != undefined ? isUrgent : true;
+		if($chk(callback)) this.options.callback = callback; // ensure that autoDismiss is set to false and callback is set.
+		isUrgent = $defined(isUrgent) ? isUrgent : true;
 		this.say(title, message, icon, isUrgent, callback);
 	},
 	
 	// Get pushy with this tell method by making your users acknowledge your message by pressing the 'OK' link.
 	tell: function(title, message, icon, isUrgent){
-		isUrgent = isUrgent != undefined ? isUrgent : true;
+		isUrgent = $defined(isUrgent) ? isUrgent : true;
 		this.options.dismissOnEvent = true;
 		this.say(title, message, icon, isUrgent);
 	},
 	
 	// Our waiter method will tell the user to wait. You're code will need to dismiss upon some event.
 	waiter: function(title, message, icon, isCentered){
-		if(isCentered != null) this.options.centered = isCentered;
+		if($chk(isCentered)) this.options.centered = isCentered;
 		this.options.autoDismiss 	= false;
 		this.options.dismissOnEvent = true;
 		this.options.centered 		= true;
@@ -124,22 +124,22 @@ var Message = new Class({
 	},
 	
 	setVars: function(title, message, icon, isUrgent, callback){
-		if(title != undefined)		this.options.title = title;
-		if(message != undefined) 	this.options.message = message;
-		if(icon != undefined)		this.options.icon = icon;
-		if(isUrgent != undefined)	this.options.isUrgent = isUrgent;
-		if(callback != undefined)	this.options.callback = callback;
+		if($defined(title))		this.options.title = title;
+		if($defined(message)) 	this.options.message = message;
+		if($defined(icon))		this.options.icon = icon;
+		if($defined(isUrgent))	this.options.isUrgent = isUrgent;
+		if($defined(callback))	this.options.callback = callback;
 	},
 		
 	// Creates the chain and sets it in motion...
 	setMsgChain: function(){		
 		
-		if(this.fx == null){		
+		if(!$chk(this.fx)){		
 			// The simple fade in and out Fx. This initializes the native chain linking option and calls the chain after each transition completes.
 			this.fx = new Fx.Tween(this.box, {
 				link: 'chain',
 				onComplete: function(){
-					if((this.options.autoDismiss && !this.options.dismissOnEvent) || (!this.isDisplayed && this.options.callback == null) ) this.msgChain.callChain();
+					if((this.options.autoDismiss && !this.options.dismissOnEvent) || (!this.isDisplayed && !$chk(this.options.callback)) ) this.msgChain.callChain();
 				}.bind(this),
 				transition: this.options.fxTransition,
 				duration: this.options.fxDuration
@@ -149,7 +149,7 @@ var Message = new Class({
 		// Must set the wait time to 0 when it's urgent otherwise the message will not dismiss immediately when the user
 		// clicks a dismissing link.
 		var waitTime
-		if(this.options.callback != null || this.options.autoDismiss == false || this.options.dismissOnEvent) waitTime = 0; else waitTime = 2000 ;
+		if($chk(this.options.callback) || this.options.autoDismiss == false || this.options.dismissOnEvent) waitTime = 0; else waitTime = 2000 ;
 		
 		// Shows the message, waits, then closes it.
 		this.msgChain.wait(
@@ -206,7 +206,7 @@ var Message = new Class({
 	
 	// Determines where the message will be displayed.
 	setBoxPosition: function(){
-		this.boxPos = {}; // Class positioning container.
+		this.boxPos = new Hash(); // Class positioning container.
 		
 		/* Support for the top and left positioning. These variables overide other positioning settings 
 		   like centering on urgency, and event/cursor positioning. */
@@ -226,7 +226,7 @@ var Message = new Class({
 			
 		if(this.options.isUrgent){ mcClass = '[class*=mcUrgent]';}
 		else if(this.options.top){ mcClass = '[class*=mcTop]';}
-		else if(this.options.callingElement != undefined){ mcClass = '[class*=mcElement]'}
+		else if($defined(this.options.callingElement)){ mcClass = '[class*=mcElement]'}
 		else { mcClass = '[class*=mcDefault]'; }
 			
 		if(this.options.stack){ 
@@ -260,7 +260,7 @@ var Message = new Class({
 
 		
 		// If there was an event that was passed, show the message at the cursor coordinates...
-		if((this.options.passEvent != null && !this.options.isUrgent) && !usePosition){
+		if(($chk(this.options.passEvent) && !this.options.isUrgent) && !usePosition){
 			/* Ensure that the message doesn't fall outside of the viewable area. 
 			   As the positioning of the message is determined by the cursor position,
 			   the message box might be too large and it will fall too far to the right. 
@@ -269,11 +269,11 @@ var Message = new Class({
 			var offsetCursor;
 			(this.options.passEvent.page.x + this.boxSize.x > this.windowSize.x)? offsetCursor = (this.boxSize.x * -1) - 5 : offsetCursor = 5;
 			
-			Object.append(this.boxPos,{
+			this.boxPos.extend({
 				startTop  : this.options.passEvent.page.y - this.options.offset,
 				startLeft : this.options.passEvent.page.x + offsetCursor,
 				endTop	  : this.options.passEvent.page.y + stackDown - (stackPad * 3)
-			});
+			});	
 			
 		/* If the message is urgent or centered, displays the message in the center of the page, 
 		   getting the users attention like a punch in the face! Like... POW! */
@@ -287,7 +287,7 @@ var Message = new Class({
 				stackDown = this.boxPosition.top;	
 			}
 			
-			Object.append(this.boxPos,{
+			this.boxPos.extend({
 				startTop  : this.boxPosition.top - 100,
 				startLeft : this.boxPosition.left,
 				endTop 	  : stackDown
@@ -295,11 +295,11 @@ var Message = new Class({
 			
 		// Positions passed here...
 		} else {
-			Object.append(this.boxPos,{
+			this.boxPos.extend({
 				startTop  : startTopPos,
 				startLeft : startLeftPos,
 				endTop 	  : endTopPos 
-			});		
+			});			
 		}
 	},
 	
@@ -333,12 +333,12 @@ var Message = new Class({
 			
 		if(this.options.top){ top = " mcTop"; }
 		else if(this.options.isUrgent){ urgent = " mcUrgent"; }
-		else if(this.options.callingElement != undefined){ mcElement = " mcElement"; }
+		else if($defined(this.options.callingElement)){ mcElement = " mcElement"; }
 		else{ normal = ' mcDefault'; }
 			
 		newBox = new Element('div', {'class': 'msgBox messageClass' + top + normal + urgent + mcElement, 'styles': {'max-width':this.options.width, 'width':this.options.width}});
 		imageSize = 0;
-		if(this.options.icon != null) {
+		if($chk(this.options.icon)) {
 			var newIcon = new Element('div', {'class': 'msgBoxIcon'});
 			var newImage = new Element('img', {
 				'class': 'msgBoxImage',
@@ -351,7 +351,7 @@ var Message = new Class({
 		}
 		
 		// If the title or the message vars are not set, get the content from the "rel" property of the expected passed calling element.
-		if(this.options.title == null || this.options.message == null) this.getContent();
+		if(!$chk(this.options.title) || !$chk(this.options.message)) this.getContent();
 		
 		newContent = new Element('div', {
 			'class': 'msgBoxContent'
@@ -377,7 +377,7 @@ var Message = new Class({
 		isComment = this.options.message.indexOf('textarea') > -1;
 		
 		// Urgent messages with an callback parametre requires a yes and a no link to dismiss the message
-		if(this.options.callback != null && !isComment) {
+		if($chk(this.options.callback) && !isComment) {
 			
 			var yes = this.createLink(this.options.yesLink, true);
 			var no 	= this.createLink(this.options.noLink, false);
@@ -409,7 +409,7 @@ var Message = new Class({
 		
 		// Putting the message box together.
 		p.inject(newMessage);
-		if(this.options.icon != null) { 
+		if($chk(this.options.icon)) { 
 			newIcon.inject(newBox);
 			newImage.inject(newIcon);
 		}
@@ -454,8 +454,8 @@ var Message = new Class({
 	
 	executeCallback: function(){
 		// Determine if the callback is an object, function or a string to evaluate. It is expected that the object will have a click event.
-		if(typeOf(this.options.callback) == 'element') this.options.callback.fireEvent('click');
-		else if (typeOf(this.options.callback)=='function') this.options.callback.run();
+		if($type(this.options.callback) == 'element') this.options.callback.fireEvent('click');
+		else if ($type(this.options.callback)=='function') this.options.callback.run();
 		else eval(this.options.callback);
 	},
 	
@@ -464,10 +464,10 @@ var Message = new Class({
 		// Expecting a calling element.
 		var title;
 		var msg;
-		if(this.options.callingElement != undefined){
+		if($defined(this.options.callingElement)){
 			var rel = this.options.callingElement.getProperty('rel');
 			var arr;
-			if(rel == null){
+			if(!$chk(rel)){
 				arr 	= this.setError("Expected data in the 'rel' property of this calling element was not defined.")
 				title 	= arr[0];
 				msg 	= arr[1];

@@ -5,6 +5,9 @@ This Message Class is a simple Mootools class that will send a message to the us
 
 ![Screenshot](http://www.coldfiredesigns.com/2010/downloads/MessageClassScreenShot.jpg)
 
+Version: 2.1
+
+
 Some Key Features
 -----------------
 
@@ -156,12 +159,15 @@ Screenshots
 Mootools Plugin Dependencies
 ----------------------------
 
-This class requires:
+Mootools Core 1.3 *.*
 
+Mootools More 1.2.4+ 
+
+	* Array.Extras;
 	* Chain.Wait;
 	* Element.Measure;
 	* Element.Position;
-	* Array.Extras;
+	* Element.ShortCuts;
 
 
 Notes
@@ -171,7 +177,7 @@ The styling is almost completely dependent upon the message.css included in the 
 
 It's been tested in IE 7+, Safari, Firefox, and Google Chrome. IE 6 is not supported.
 
-It was developed on Mootools 1.2.4. It should work on anything 1.2. If it doesn't, contact me at http://www.coldfiredesigns.com. You'll find me there.
+It was developed on Mootools 1.2.4, and upgraded to 1.3 after the release of Mootools 1.3. Earlier versions can be found on http://www.coldfiredesigns.com. Any problems, contact me at beaudoin.jason@gmail.com.
 
 
 Demo
