@@ -11,15 +11,15 @@ Version: 2.1
 Some Key Features
 -----------------
 
-	* It fades in and fades out on it's own;
-	* Force a response with the tell method;
-	* Ask a user a question and execute a callback function on a "yes" click;
-	* Position the message anywhere on the screen;
-	* Use it as an input for comments... very useful!;
-	* Style it the way you wish using CSS;
-	* Make it as wide as you need (through the options);
-	* Can be dismissed automatically, on an event, on a delay, etc
-	* Much more!... check it out.
+	- It fades in and fades out on it's own;
+	- Force a response with the tell method;
+	- Ask a user a question and execute a callback function on a "yes" click;
+	- Position the message anywhere on the screen;
+	- Use it as an input for comments... very useful!;
+	- Style it the way you wish using CSS;
+	- Make it as wide as you need (through the options);
+	- Can be dismissed automatically, on an event, on a delay, etc
+	- Much more!... check it out.
 
 
 How to use

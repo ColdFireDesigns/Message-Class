@@ -17,7 +17,6 @@ requires:
 - more/1.3.0.1:Element.Measure
 
 provides: [Message.say, Message.tell, Message.ask, Message.waiter, Message.tip]
-
 ...
 */
 
