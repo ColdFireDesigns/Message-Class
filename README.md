@@ -11,15 +11,15 @@ Version: 2.1
 Some Key Features
 -----------------
 
-	- It fades in and fades out on it's own;
-	- Force a response with the tell method;
-	- Ask a user a question and execute a callback function on a "yes" click;
-	- Position the message anywhere on the screen;
-	- Use it as an input for comments... very useful!;
-	- Style it the way you wish using CSS;
-	- Make it as wide as you need (through the options);
-	- Can be dismissed automatically, on an event, on a delay, etc
-	- Much more!... check it out.
+* It fades in and fades out on it's own;
+* Force a response with the tell method;
+* Ask a user a question and execute a callback function on a "yes" click;
+* Position the message anywhere on the screen;
+* Use it as an input for comments... very useful!;
+* Style it the way you wish using CSS;
+* Make it as wide as you need (through the options);
+* Can be dismissed automatically, on an event, on a delay, etc
+* Much more!... check it out.
 
 
 How to use
@@ -27,53 +27,73 @@ How to use
 
 All that you have to do is call the class, and as a minimum, you set three basic parameters:
 
-	* the icon you want to use (40x40);
-	* the title of your message;
-	* the message itself
+* the icon you want to use (40x40);
+* the title of your message;
+* the message itself
 
 ...then you execute your command:
 
-	* say();
-	* tell();
-	* ask();
-	* tip();
-	* waiter();
+* say();
+* tell();
+* ask();
+* tip();
+* waiter();
 
 Options
 -------
 
-	* callingElement: (element: default to null)
-	* top: (boolean: defaults to false) Set the message to come out from the top edge of the window. Defaults to the bottom.
-	* left: (boolean: defaults to false) Set the message to the left. Defaults to right.
-	* centered: (boolean: defaults to false) Set the message to the center of the window.
-	* offset: (integer: defaults to 30) Determines the padding to give from the edge of the window frame.
-	* width: (mixed: defaults to 'auto') The CSS value of your message. Pass a number to change it.
-	* iconPath: (string: defaults to 'image/icons/') The path of the icons that you'd like to use.
-	* icon: (string: defaults to null) The file name of your icon image. Note: your icon is expected to be 40 x 40! Can be changed in the CSS.
-	* title: (string: defaults to null) The title of your message.
-	* message: (string: defaults to null) Your message.
-	* delay: (integer: defaults to 0) Delays the display of your message. Integer is interpreted in milliseconds.
-	* autoDismiss: (boolean: defaults to true) The message will dismiss on it's own.Note: this is shut off automatically when user input is needed.
-	* dismissOnEvent: (boolean: defaults to false) The message will dismiss on the mouseout event. Note: this is used automatically when an event is passed.
-	* isUrgent: (boolean: defaults to false) Use the "urgent" transitioning to get the user's attention. Note: this is automatically used on the ask and tell methods.
-	* callback: (string: defaults to null) Send a function in the form of a string to be fired on confirmation of an ask method.
-	* passEvent: (event: defaults to null) Passing an event will make the message appear the your cursor location (offset by 5 px).
-	* tipMode: (boolean: defaults to false) Tip mode is a short-cut that sets the autoDismiss and dismissOnEvent to true.
-	* stack: (Boolean: defaults to true) This stacks multiple messages on top of the previous messages (or under, depending on where you’ve put your message) instead of placing them over (as in using a z-index value). Setting it to false will use a z-index.
-	* fxTransition: (Fx.Transition: defaults to null) Set your own transition. The default transition will simply fade in.
-	* fxDuration: (mixed: defaults to 'normal') Set the transition duration. Intergers are interpreted in milliseconds.
-	* fxUrgentTransition: (Fx.Transition object: defaults to Fx.Transitions.Bounce.easeOut) Set your own urgent transition
-	* fxOutTransition:  (Fx.Transition object: defaults to null) Set the out transition. The default will simply fade out.
-	* fxOutDuration: (mixed: defaults to 'normal') Set the transition duration. Intergers are interpreted in milliseconds.
+* callingElement: (element: default to null)
 
+* top: (boolean: defaults to false) Set the message to come out from the top edge of the window. Defaults to the bottom.
+
+* left: (boolean: defaults to false) Set the message to the left. Defaults to right.
+
+* centered: (boolean: defaults to false) Set the message to the center of the window.
+
+* offset: (integer: defaults to 30) Determines the padding to give from the edge of the window frame.
+
+* width: (mixed: defaults to 'auto') The CSS value of your message. Pass a number to change it.
+
+* iconPath: (string: defaults to 'image/icons/') The path of the icons that you'd like to use.
+
+* icon: (string: defaults to null) The file name of your icon image. Note: your icon is expected to be 40 x 40! Can be changed in the CSS.
+
+* title: (string: defaults to null) The title of your message.
+
+* message: (string: defaults to null) Your message.
+
+* delay: (integer: defaults to 0) Delays the display of your message. Integer is interpreted in milliseconds.
+
+* autoDismiss: (boolean: defaults to true) The message will dismiss on it's own.Note: this is shut off automatically when user input is needed.
+
+* dismissOnEvent: (boolean: defaults to false) The message will dismiss on the mouseout event. Note: this is used automatically when an event is passed.
+
+* isUrgent: (boolean: defaults to false) Use the "urgent" transitioning to get the user's attention. Note: this is automatically used on the ask and tell methods.
+
+* callback: (string: defaults to null) Send a function in the form of a string to be fired on confirmation of an ask method.
+
+* passEvent: (event: defaults to null) Passing an event will make the message appear the your cursor location (offset by 5 px).
+
+* tipMode: (boolean: defaults to false) Tip mode is a short-cut that sets the autoDismiss and dismissOnEvent to true.
+
+* stack: (Boolean: defaults to true) This stacks multiple messages on top of the previous messages (or under, depending on where you’ve put your message) instead of placing them over (as in using a z-index value). Setting it to false will use a z-index.
+
+* fxTransition: (Fx.Transition: defaults to null) Set your own transition. The default transition will simply fade in.
+
+* fxDuration: (mixed: defaults to 'normal') Set the transition duration. Intergers are interpreted in milliseconds.
+
+* fxUrgentTransition: (Fx.Transition object: defaults to Fx.Transitions.Bounce.easeOut) Set your own urgent transition
+
+* fxOutTransition:  (Fx.Transition object: defaults to null) Set the out transition. The default will simply fade out.
+
+* fxOutDuration: (mixed: defaults to 'normal') Set the transition duration. Intergers are interpreted in milliseconds.
 
 
 Events
 ------
 
-	* onShow: fires when the message shows
-	* onComplete: fires when the message hides
-
+* onShow: fires when the message shows
+* onComplete: fires when the message hides
 
 Code Snippets
 -------------
@@ -161,13 +181,13 @@ Mootools Plugin Dependencies
 
 Mootools Core 1.3 *.*
 
-Mootools More 1.2.4+ 
+Mootools More 1.3:
 
-	* Array.Extras;
-	* Chain.Wait;
-	* Element.Measure;
-	* Element.Position;
-	* Element.ShortCuts;
+* Array.Extras;
+* Chain.Wait;
+* Element.Measure;
+* Element.Position;
+* Element.ShortCuts;
 
 
 Notes
