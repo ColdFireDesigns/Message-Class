@@ -331,6 +331,8 @@ var Message = new Class({
 			isComment, 
 			newMessage;
 			
+		/* 	I put assign a specific class to each message to support stacking. This is done so that I'll know
+			I'll know where to stack other messages that are the same. */
 		if(this.options.top){ top = " mcTop"; }
 		else if(this.options.isUrgent){ urgent = " mcUrgent"; }
 		else if(this.options.callingElement != undefined){ mcElement = " mcElement"; }
@@ -448,7 +450,7 @@ var Message = new Class({
 		var dummy = new Element('div', {'id': 'dummy', 'class': myClass});
 		dummy.inject($(document.body));
 		var size = dummy.getComputedSize();
-		dummy.destroy();
+		dummy.dispose();
 		return size.totalWidth;
 	},
 	
@@ -490,7 +492,7 @@ var Message = new Class({
 	},
 	
 	complete: function(){
-		this.box.destroy(); // A James-Bond-style, self destruct feature when it's all done.
+		this.box.dispose(); // A James-Bond-style, self destruct feature when it's all done.
 		this.end = true; // Message status support (just in case you need it).
 		this.isDisplayed = false;
 		this.fireEvent('onComplete'); // If you've set an onComplete event during instantiation of the class, it will fire here.
