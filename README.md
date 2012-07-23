@@ -179,9 +179,9 @@ Screenshots
 Mootools Plugin Dependencies
 ----------------------------
 
-Mootools Core 1.3 *.*
+Mootools Core 1.4 *.*
 
-Mootools More 1.3:
+Mootools More 1.4:
 
 * Array.Extras;
 * Chain.Wait;

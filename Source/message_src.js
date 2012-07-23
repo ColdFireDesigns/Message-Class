@@ -27,7 +27,7 @@ var Message = new Class({
 	isDisplayed: false,
 	windowSize: null,
 	pageSize: null,
-	page: $(document),
+	page: document,
 	box: null,
 	boxSize: null,
 	scrollPos: null,
@@ -173,7 +173,7 @@ var Message = new Class({
 		this.setBoxPosition();
 		
 		// If the vertical scroll bar is hidden, ensure that one doesn't show up during this process.		
-		if(this.hasVerticalBar) $(document.body).setStyle('overflow', 'hidden'); // doesn't work in IE, but will not cause any ill effects.
+		if(this.hasVerticalBar) document.body.setStyle('overflow', 'hidden'); // doesn't work in IE, but will not cause any ill effects.
 		
 		this.box.setStyles({
 			'opacity': 0,
@@ -316,20 +316,9 @@ var Message = new Class({
 	
 	// Creates the message elements.
 	createBox: function(){
-		var top = "", 
-			left = "",
-			normal = "",
-			urgent = "",
-			mcElement = "",
-			newbox, 
-			imageSize, 
-			newContent, 
-			newTitle, 
-			imagesWidth, 
-			newClear, 
-			p, 
-			isComment, 
-			newMessage;
+		var top = "", left = "", normal = "", urgent = "", mcElement = "",
+			newbox, imageSize, newContent, newTitle, imagesWidth, newClear, p, 
+			isComment, newMessage, sendLink, cancelLink, yes, no, newIcon, newImage;
 			
 		/* 	I put assign a specific class to each message to support stacking. This is done so that I'll know
 			I'll know where to stack other messages that are the same. */
@@ -338,11 +327,18 @@ var Message = new Class({
 		else if(this.options.callingElement != undefined){ mcElement = " mcElement"; }
 		else{ normal = ' mcDefault'; }
 			
-		newBox = new Element('div', {'class': 'msgBox messageClass' + top + normal + urgent + mcElement, 'styles': {'max-width':this.options.width, 'width':this.options.width}});
+		newBox = new Element('div', {
+			'id': 'mooMessage',
+			'class': 'msgBox messageClass' + top + normal + urgent + mcElement, 
+			'styles': {
+				'max-width':this.options.width, 
+				'width':this.options.width
+				}
+			});
 		imageSize = 0;
 		if(this.options.icon != null) {
-			var newIcon = new Element('div', {'class': 'msgBoxIcon'});
-			var newImage = new Element('img', {
+			newIcon = new Element('div', {'class': 'msgBoxIcon'});
+			newImage = new Element('img', {
 				'class': 'msgBoxImage',
 				'src': this.options.iconPath + this.options.icon,
 				'styles':{
@@ -381,8 +377,8 @@ var Message = new Class({
 		// Urgent messages with an callback parametre requires a yes and a no link to dismiss the message
 		if(this.options.callback != null && !isComment) {
 			
-			var yes = this.createLink(this.options.yesLink, true);
-			var no 	= this.createLink(this.options.noLink, false);
+			yes = this.createLink(this.options.yesLink, true);
+			no 	= this.createLink(this.options.noLink, false);
 			
 			yes.inject(p);
 			p.appendText(' | ');
@@ -390,8 +386,8 @@ var Message = new Class({
 			
 		} else if(isComment){
 			
-			var sendLink 	= this.createLink('Send', true);			
-			var cancelLink 	= this.createLink('Cancel', false);
+			sendLink 	= this.createLink('Send', true);			
+			cancelLink 	= this.createLink('Cancel', false);
 			
 			sendLink.inject(p);	
 			p.appendText(' | ');
@@ -446,10 +442,13 @@ var Message = new Class({
 	
 	// Gets the total size (width + padding) of a CSS class. Creates an element; injects it into the DOM; messures the element and destroys it.
 	// Inserting an element into the DOM is the only way to messure it.
-	getCSSTotalWidth: function(myClass){	
-		var dummy = new Element('div', {'id': 'dummy', 'class': myClass});
-		dummy.inject($(document.body));
-		var size = dummy.getComputedSize();
+	getCSSTotalWidth: function(myClass){
+		var dummy, 
+			size;
+		
+		dummy = new Element('div', {'id': 'dummy', 'class': myClass});
+		dummy.inject(document.body);
+		size = dummy.getComputedSize();
 		dummy.dispose();
 		return size.totalWidth;
 	},
@@ -496,14 +495,17 @@ var Message = new Class({
 		this.end = true; // Message status support (just in case you need it).
 		this.isDisplayed = false;
 		this.fireEvent('onComplete'); // If you've set an onComplete event during instantiation of the class, it will fire here.
-		$(document.body).setStyle('overflow', 'auto');
+		document.body.setStyle('overflow', 'auto');
 	},
 		
 	hideMsg: function(){
+		var position,
+			topPos;
+		
 		// Must set the overflow to hidden again here in case there is more than one message that is being shown!	
-		if(this.hasVerticalBar) $(document.body).setStyle('overflow', 'hidden');
-		var position = this.box.getCoordinates(); // Get the current position (will be different than the coordinates at the start of the procedure).
-		this.box.fade('out');
+		if(this.hasVerticalBar) document.body.setStyle('overflow', 'hidden');
+		position = this.box.getCoordinates(); // Get the current position (will be different than the coordinates at the start of the procedure).
+		this.box.fade(0);
 		
 		this.fxOut = new Fx.Tween(this.box, {
 			transition: this.options.fxOutTransition,
@@ -514,7 +516,7 @@ var Message = new Class({
 			this.complete(); // runs the onComplete event once the fx transition is fully complete.
 		}.bind(this));
 		
-		var topPos;		
+		topPos;		
 		this.options.top ? topPos = this.boxSize.y * -1 : topPos = position.top + this.boxSize.y;
 		
 		this.fxOut.start('top', topPos);
